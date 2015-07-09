@@ -33,6 +33,11 @@ public @interface Directive {
 	/**
 	 * Argument label for help, defaulted to args
 	 */
-	public String argumentLabel() default "args";
+	public ArgumentType[] arguments() default {};
+	
+	/**
+	 * Whether or not arguments are optional
+	 */
+	public String[] argumentLabels() default {};
 	
 }

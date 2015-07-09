@@ -8,6 +8,7 @@ import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandContext;
 
+import com.minnymin.util.directive.ArgumentType;
 import com.minnymin.util.directive.Directive;
 import com.minnymin.util.directive.DirectiveHandler;
 
@@ -45,6 +46,14 @@ public class DemoPlugin {
 	@Directive(names = {"example.sub"})
 	public static CommandResult exampleSubCommand(CommandSource src, CommandContext args) {
 		src.sendMessage(Texts.of("Hello world! This is an example sub command"));
+		return CommandResult.success();
+	}
+	
+	// Example of argument parsing
+	@Directive(names = {"exargs"}, argumentLabels = {"msg"}, arguments = {ArgumentType.OPTIONAL_STRING})
+	public static CommandResult exampleArgumentCommand(CommandSource src, CommandContext args) {
+		// Get the msg from args
+		src.sendMessage(Texts.of(args.<String>getOne("msg").get()));
 		return CommandResult.success();
 	}
 	

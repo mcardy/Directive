@@ -5,16 +5,15 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.spongepowered.api.Game;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.args.GenericArguments;
+import org.spongepowered.api.util.command.args.CommandElement;
 import org.spongepowered.api.util.command.spec.CommandExecutor;
 import org.spongepowered.api.util.command.spec.CommandSpec;
-
-import com.google.common.base.Optional;
 
 /**
  * A branch of directives
@@ -94,7 +93,7 @@ public class DirectiveTree {
 	 * Gets the spec of this branch containing all sub branches as childs
 	 * @return A new CommandSpec for this branch
 	 */
-	public CommandSpec getSpec() {
+	public CommandSpec getSpec(Game game) {
 		DirectiveExecutor executor = new DirectiveExecutor(this.executor);
 		CommandSpec.Builder spec = CommandSpec.builder();
 		spec.executor(executor);
@@ -102,16 +101,20 @@ public class DirectiveTree {
 		if (this.executor != null) {
 			Directive directive = this.executor.getAnnotation(Directive.class);
 			spec.description(Texts.of(directive.description()));
-			spec.arguments(GenericArguments.optional(GenericArguments.remainingJoinedStrings(Texts.of(directive.argumentLabel()))));
 			if (directive.permission() != "") {
 				spec.permission(directive.permission());
 			}
-		} else {
-			spec.arguments(GenericArguments.optional(GenericArguments.remainingJoinedStrings(Texts.of("args"))));
+			ArgumentType[] args = directive.arguments();
+			String[] labels = directive.argumentLabels();
+			CommandElement[] elements = new CommandElement[args.length];
+			for (int i = 0; i < args.length; i++) {
+				elements[i] = args[i].construct(labels[i], game);
+			}
+			spec.arguments(elements);
 		}
 		
 		for (DirectiveTree entry : this.subDirectives) {
-			spec.child(entry.getSpec(), entry.getLabel());
+			spec.child(entry.getSpec(game), entry.getLabel());
 		}
 		return spec.build();
 	}
@@ -127,15 +130,7 @@ public class DirectiveTree {
 		public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 			if (this.executor != null) {
 				try {
-					Optional<String> argumentOption = args.<String>getOne(executor.getAnnotation(Directive.class).argumentLabel());
-					String[] stringArgs;
-					if (argumentOption.isPresent()) {
-						stringArgs = argumentOption.get().split(" ");
-					} else {
-						String[] blankArray = {};
-						stringArgs = blankArray;
-					}
-					return (CommandResult) this.executor.invoke(null, src, stringArgs);
+					return (CommandResult) this.executor.invoke(null, src, args);
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {

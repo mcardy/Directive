@@ -8,6 +8,7 @@ import java.util.Set;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandContext;
 
 /**
  * Handles collection and registration of directives
@@ -62,13 +63,17 @@ public class DirectiveHandler {
 			throw new Exception("Error registering directive method " + executor.getName() + ": Method not static!");
 		}
 		if (executor.getParameterTypes()[0] != CommandSource.class ||
-				executor.getParameterTypes()[1] != String[].class) {
-			throw new Exception("Error registering directive method " + executor.getName() + ": Incorrect arguments." +
+				executor.getParameterTypes()[1] != CommandContext.class) {
+			throw new Exception("Error registering directive method " + executor.getName() + ": Incorrect arguments. " +
 				"Must have CommandSource as first argument and CommandContext as second.");
 		}
 		if (executor.getReturnType() != CommandResult.class) {
-			throw new Exception("Error registering directive method " + executor.getName() + ": Incorrect return type." +
+			throw new Exception("Error registering directive method " + executor.getName() + ": Incorrect return type. " +
 				"Directive must return type of CommandResult.");
+		}
+		if (directive.arguments().length != directive.argumentLabels().length) {
+			throw new Exception("Error registering directive method " + executor.getName() + ": Mismatched arguments. " +
+					"arguments and argumentLabels lengths must match.");
 		}
 		String[] labels = directive.names();
 		for (String label : labels) {
@@ -119,7 +124,7 @@ public class DirectiveHandler {
 	 */
 	public void registerDirectives() {
 		for (DirectiveTree tree : this.commands) {
-			game.getCommandDispatcher().register(this.plugin, tree.getSpec(), tree.getLabel());
+			game.getCommandDispatcher().register(this.plugin, tree.getSpec(game), tree.getLabel());
 		}
 	}
 	
