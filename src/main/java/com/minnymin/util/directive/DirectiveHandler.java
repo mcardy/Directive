@@ -8,7 +8,6 @@ import java.util.Set;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
 
 /**
  * Handles collection and registration of directives
@@ -63,7 +62,7 @@ public class DirectiveHandler {
 			throw new Exception("Error registering directive method " + executor.getName() + ": Method not static!");
 		}
 		if (executor.getParameterTypes()[0] != CommandSource.class ||
-				executor.getParameterTypes()[1] != CommandContext.class) {
+				executor.getParameterTypes()[1] != String[].class) {
 			throw new Exception("Error registering directive method " + executor.getName() + ": Incorrect arguments." +
 				"Must have CommandSource as first argument and CommandContext as second.");
 		}

@@ -8,7 +8,7 @@ Let's begin by creating a new command called example
 
 ```java
 @Directive(name = {"example"}, description = "An example command", permission = "my.example.command")
-public static CommandResult exampleCommand(CommandSource src, CommandContext args) {
+public static CommandResult exampleCommand(CommandSource src, String[] args) {
   src.sendMessage(Texts.of("Hello Sender!"));
   return CommandResult.success();
 }
@@ -23,7 +23,7 @@ CommandSpec arguments.
 Directive methods must satisfy the following:
 - Method must be static
 - Method must return CommandResult
-- Method must have arguments of CommandSource and CommandContext
+- Method must have arguments of CommandSource and String[]
 
 Sub commands can be registered by adding periods into the name of the command.
 For example, 'example.test' would register test as a subcommand of example and
@@ -49,5 +49,5 @@ call ```handler.addDirectives(MyCommands.class)```.
 Once you have added all of your directives, the method handler.registerDirectives()
 must be called to add all of the commands through Sponge's API.
 
-A full example plugin can be found at 
+A full example plugin can be found at
 https://github.com/minnymin3/Directive/blob/master/src/main/java/com/minnymin/demo/DemoPlugin.java

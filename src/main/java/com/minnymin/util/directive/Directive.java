@@ -30,4 +30,9 @@ public @interface Directive {
 	 */
 	public String permission() default "";
 	
+	/**
+	 * Argument label for help, defaulted to args
+	 */
+	public String argumentLabel() default "args";
+	
 }
