@@ -50,4 +50,4 @@ Once you have added all of your directives, the method handler.registerDirective
 must be called to add all of the commands through Sponge's API.
 
 A full example plugin can be found at 
-https://github.com/minnymin3/Directive/tree/master/src/java/com/minnymin/demo/DemoPlugin.java
+https://github.com/minnymin3/Directive/blob/master/src/main/java/com/minnymin/demo/DemoPlugin.java
