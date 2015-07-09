@@ -15,7 +15,7 @@ import org.spongepowered.api.util.command.spec.CommandSpec;
 
 /**
  * A branch of directives
- * 
+ *
  * @author minnymin3
  *
  */
@@ -24,7 +24,7 @@ public class DirectiveTree {
 	private Set<DirectiveTree> subDirectives;
 	private String label;
 	private Method executor;
-	
+
 	/**
 	 * Creates a new branch
 	 * @param label The label of the branch
@@ -35,7 +35,7 @@ public class DirectiveTree {
 		this.label = label;
 		this.subDirectives = new HashSet<DirectiveTree>();
 	}
-	
+
 	/**
 	 * Adds a sub directive with the given label
 	 * @param label The label of the directive
@@ -44,7 +44,7 @@ public class DirectiveTree {
 	public void addSubDirective(DirectiveTree tree) {
 		this.subDirectives.add(tree);
 	}
-	
+
 	/**
 	 * Gets a sub directive by the provided label
 	 * @param label The directive to get
@@ -58,11 +58,11 @@ public class DirectiveTree {
 		}
 		return null;
 	}
-	
+
 	public String getLabel() {
 		return this.label;
 	}
-	
+
 	/**
 	 * Checks if this is the end of the tree or not
 	 * @return False if end of tree
@@ -70,7 +70,7 @@ public class DirectiveTree {
 	public boolean isBranch() {
 		return this.subDirectives.isEmpty();
 	}
-	
+
 	/**
 	 * Gets the executor for this branch
 	 * @return A method executor annotated by @Directive
@@ -78,7 +78,7 @@ public class DirectiveTree {
 	public Method getExecutor() {
 		return this.executor;
 	}
-	
+
 	/**
 	 * Sets the executor for this branch
 	 * @param executor A method executor annotated by @Directive
@@ -86,7 +86,7 @@ public class DirectiveTree {
 	public void setExecutor(Method executor) {
 		this.executor = executor;
 	}
-	
+
 	/**
 	 * Gets the spec of this branch containing all sub branches as childs
 	 * @return A new CommandSpec for this branch
@@ -95,6 +95,7 @@ public class DirectiveTree {
 		DirectiveExecutor executor = new DirectiveExecutor(this.executor);
 		CommandSpec.Builder spec = CommandSpec.builder();
 		spec.executor(executor);
+		spec.arguments(GenericArguments.remainingJoinedStrings(Texts.of("raw")));
 
 		if (this.executor != null) {
 			Directive directive = this.executor.getAnnotation(Directive.class);
@@ -103,24 +104,26 @@ public class DirectiveTree {
 				spec.permission(directive.permission());
 			}
 		}
-		
+
 		for (DirectiveTree entry : this.subDirectives) {
 			spec.child(entry.getSpec(), entry.getLabel());
 		}
 		return spec.build();
 	}
-	
+
 	private class DirectiveExecutor implements CommandExecutor {
 
 		private Method executor;
-		
+
 		public DirectiveExecutor(Method executor) {
 			this.executor = executor;
 		}
-		
+
 		public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 			if (this.executor != null) {
 				try {
+					String rawArguments = args.<String>getOne("raw").get();
+					args.putArg("args", rawArguments.split(" "));
 					return (CommandResult) this.executor.invoke(null, src, args);
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
@@ -134,7 +137,7 @@ public class DirectiveTree {
 			}
 			return CommandResult.empty();
 		}
-		
+
 	}
-	
+
 }
