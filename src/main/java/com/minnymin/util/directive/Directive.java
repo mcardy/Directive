@@ -31,6 +31,11 @@ public @interface Directive {
 	public String permission() default "";
 	
 	/**
+	 * Whether or not the command is in-game only
+	 */
+	public boolean inGameOnly() default false;
+	
+	/**
 	 * Argument label for help, defaulted to args
 	 */
 	public ArgumentType[] arguments() default {};

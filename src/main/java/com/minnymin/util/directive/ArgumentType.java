@@ -10,6 +10,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.args.CommandElement;
 import org.spongepowered.api.util.command.args.GenericArguments;
+import org.spongepowered.api.world.DimensionType;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -24,16 +25,20 @@ public enum ArgumentType {
 	BOOLEAN("ChoicesCommandElement", false, ArgumentUtils.toArray(Map.class, boolean.class),
 			ArgumentUtils.BOOLEAN_CHOICES, 5),
 	INTEGER("IntegerElement"),
+	LOCATION("CatalogedTypeCommandElement", true, ArgumentUtils.toArray(Class.class), DimensionType.class),
 	PLAYER("PlayerCommandElement", true, ArgumentUtils.toArray(boolean.class), false),
 	REMAINING("RemainingJoinedStringsCommandElement", false, ArgumentUtils.toArray(boolean.class), false),
 	STRING("StringElement"),
+	WORLD("WorldPropertiesCommandElement", true),
 
 	// Optional Arguments
 	OPTIONAL_BOOLEAN(ArgumentType.BOOLEAN),
 	OPTIONAL_INTEGER(ArgumentType.INTEGER),
+	OPTIONAL_LOCATION(ArgumentType.LOCATION),
 	OPTIONAL_PLAYER(ArgumentType.PLAYER),
 	OPTIONAL_REMAINING(ArgumentType.REMAINING),
-	OPTIONAL_STRING(ArgumentType.STRING);
+	OPTIONAL_STRING(ArgumentType.STRING),
+	OPTIONAL_WORLD(ArgumentType.WORLD);
 
 	private Constructor<?> constructor;
 	private boolean needGame;
@@ -175,7 +180,7 @@ public enum ArgumentType {
 			for (Object o : options) {
 				list.add(o);
 			}
-			return list.toArray(new Object[0]);
+			return list.toArray(new Object[list.size()]);
 		}
 
 		private static Object[] constructorArray(String key, Object[] options) {
@@ -184,7 +189,7 @@ public enum ArgumentType {
 			for (Object o : options) {
 				list.add(o);
 			}
-			return list.toArray(new Object[0]);
+			return list.toArray(new Object[list.size()]);
 		}
 
 		private static Class<?>[] argumentArray(boolean game, Class<?>[] options) {
@@ -196,7 +201,7 @@ public enum ArgumentType {
 			for (Class<?> c : options) {
 				list.add(c);
 			}
-			return list.toArray(new Class<?>[0]);
+			return list.toArray(new Class<?>[list.size()]);
 		}
 	}
 

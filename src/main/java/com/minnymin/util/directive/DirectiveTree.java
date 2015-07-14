@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
@@ -130,6 +131,10 @@ public class DirectiveTree {
 		public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 			if (this.executor != null) {
 				try {
+					if (this.executor.getAnnotation(Directive.class).inGameOnly() && !(src instanceof Player)) {
+						src.sendMessage(Texts.of("This command can only be executed by an in-game player"));
+						return CommandResult.success();
+					}
 					return (CommandResult) this.executor.invoke(null, src, args);
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
